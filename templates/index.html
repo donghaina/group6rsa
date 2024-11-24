@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Online RSA Encryption/Decryption Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen justify-between" id="app">
+<div class="flex flex-col justify-space overflow-hidden  py-6 lg:px-10">
+    <h1 class="text-4xl font-bold text-blue-600 text-center">Online RSA Encryption/Decryption Tool</h1>
+    <div class="py-5 text-gray-500 ">
+        <p>RSA(Rivest-Shamir-Adleman) is an asymmetric encryption technique that uses two different keys as public and
+            private keys to perform the encryption and decryption. With RSA, you can encrypt sensitive information with
+            a
+            public key and a matching private key is used to decrypt the encrypted message. Asymmetric encryption is
+            mostly
+            used when there are 2 different endpoints are involved such as VPN client and server, SSH, etc.</p>
+        <p>Below is an online tool to perform RSA encryption and decryption as an RSA calculator.</p>
+    </div>
+    <div class="relative bg-white lg:px-10">
+        <div class="mx-auto py-6">
+            <!--            <h1 class="text-2xl font-bold">Generate RSA Key Pair Online</h1>-->
+            <button type="button ml-6" @click="handleGenerateKeys"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                Generate RSA Key Pair
+            </button>
+            <div class="flex">
+                <div class="basis-1/2 space-y-6 pr-6 text-base leading-7 text-gray-600">
+                    <label for="private_key" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Private
+                        Key</label>
+                    <textarea id="private_key" rows="5" v-model="privateKey"
+                              class="block p-2 w-full text-lg text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Private Key..."></textarea>
+
+                </div>
+                <div class="basis-1/2 space-y-6 text-base leading-7 text-gray-600">
+                    <label for="public_key" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Public
+                        Key</label>
+                    <textarea id="public_key" rows="5" v-model="publicKey"
+                              class="block p-2 w-full text-lg text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Public Key..."></textarea>
+
+                </div>
+            </div>
+        </div>
+        <div class="mx-auto pb-6">
+            <!--            <h1 class="text-2xl font-bold">RSA Encryption and Decryption</h1>-->
+            <div class="flex">
+                <div class="basis-1/2 space-y-6 pr-6 text-base leading-7 text-gray-600">
+                    <label for="RSA_Encryption"
+                           class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">RSA Encryption</label>
+                    <textarea id="RSA_Encryption" rows="5" v-model="plaintext"
+                              class="block p-2.5 w-full text-lg text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Plaintext..."></textarea>
+                    <button type="button" @click="handleEncrypt"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        Encrypt
+                    </button>
+
+                </div>
+                <div class="basis-1/2 space-y-6 text-base leading-7 text-gray-600">
+                    <label for="RSA_Decryption"
+                           class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">RSA
+                        Decryption</label>
+                    <textarea id="RSA_Decryption" rows="5" v-model="ciphertext"
+                              class="block p-2.5 w-full text-lg text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Ciphertex..."></textarea>
+                    <button type="button" @click="handleDecrypt"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        Decrypt
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="w-full max-w-screen-xl mx-auto py-4">
+    <span class="block text-sm text-gray-500 sm:text-center">© 2024 by Group6(Yaxing Li, Haina Dong, Xiaojing Guo, Yuqi Song, Zijian Han). All Rights Reserved.</span>
+</footer>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const {createApp, ref} = Vue
+
+    createApp({
+        data() {
+            return {
+                privateKey: '',
+                publicKey: '',
+                plaintext: 'hello world',
+                ciphertext: ''
+            };
+        },
+        created() {
+            // Fetch the post data when the component is created
+            // this.fetchPostContent();
+        },
+        methods: {
+            handleGenerateKeys() {
+                axios.get('/generateKeys')
+                    .then(response => {
+                        console.log(response)
+                        this.publicKey = response.data.publicKey;
+                        this.privateKey = response.data.privateKey;
+                        this.ciphertext = '';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching post content:', error);
+                    });
+            },
+            handleEncrypt() {
+                axios.post('/encrypt', {
+                    publicKey: this.publicKey,
+                    plaintext: this.plaintext,
+                }).then(response => {
+                    console.log(response)
+                    this.ciphertext = response.data.ciphertext;
+                }).catch(error => {
+                    console.error('Error fetching post content:', error);
+                });
+            },
+            handleDecrypt() {
+                // Use Axios to make the GET request to a placeholder API
+                axios.post('/decrypt', {
+                    privateKey: this.privateKey,
+                    ciphertext: this.ciphertext
+                }).then(response => {
+                    console.log(response)
+                    this.plaintext = response.data.plaintext;
+                }).catch(error => {
+                    console.error('Error fetching post content:', error);
+                });
+            }
+        }
+    }).mount('#app');
+</script>
+</html>
