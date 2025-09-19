@@ -15,4 +15,7 @@ run code
 python3 app.py
 ```
 
+instruction video
+https://github.com/user-attachments/assets/3c2810c9-d73f-4b2c-a097-d9d9d1159d2d
+
 
